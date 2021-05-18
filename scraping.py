@@ -92,74 +92,35 @@ def mars_facts():
         return None
         
         # Assign columns and set index of dataframe
-    df.columns=['description','Mars', 'Earth']
-    df.set_index ('description', inplace=True)
+    df.columns=['Description','Mars', 'Earth']
+    df.set_index ('Description', inplace=True)
         
     # Convert dataframe into HTML format, add bootstrap
-    return df.to_html(classes="table table-striped")
+    return df.to_html(classes="table table-bordered")
     
 
-# def hemispheres(browser):
-#     url = 'https://marshemispheres.com/'
-#     browser.visit(url)
 
-#     #optional delay for loading the webpage
-#     browser.is_element_present_by_css('div.list_text', wait_time=1)
-#     hemisphere_image_urls = []
-
-#     # Add try/except for error handling
-#     try:
-#         hemslist = browser.find_by_css('a.product-item h3')
-#     # 3. Write code to retrieve the image urls and titles for each hemisphere.
-#         for i in range(len(hemslist)-1): 
-#             hemslist = browser.find_by_css('a.product-item h3')
-#             hemslist[i].click()
-#             target = browser.links.find_by_text('Sample').first
-#             img_url = target['href']
-#             #img_title = browser.find_by_css("h2.title").text
-#             #hemisphere_image_urls[img_title]=img_url
-#             hemisphere_image_urls.append(url + img_url)
-#             browser.back()
-
-#     except AttributeError:
-#         return None, None
-    
-#     return hemisphere_image_urls
 
 def hemispheres(browser):
-   # A way to break up long strings
-   url = (
-       "https://astrogeology.usgs.gov/search/"
-       "results?q=hemisphere+enhanced&k1=target&v1=Mars"
-   )
-   browser.visit(url)
-   # Click the link, find the sample anchor, return the href
-   hemisphere_image_urls = []
-   for i in range(4):
-       # Find the elements on each loop to avoid a stale element exception
-       browser.find_by_css("a.product-item h3")[i].click()
-       hemi_data = scrape_hemisphere(browser.html)
-       # Append hemisphere object to list
-       hemisphere_image_urls.append(hemi_data)
-       # Finally, we navigate backwards
-       browser.back()
-   return hemisphere_image_urls
-def scrape_hemisphere(html_text):
-   # parse html text
-   hemi_soup = soup(html_text, "html.parser")
-   # adding try/except for error handling
-   try:
-       title_elem = hemi_soup.find("h2", class_="title").get_text()
-       sample_elem = hemi_soup.find("a", text="Sample").get("href")
-   except AttributeError:
-       # Image error will return None, for better front-end handling
-       title_elem = None
-       sample_elem = None
-   hemispheres = {
-       "title": title_elem,
-       "img_url": sample_elem
-   }
-   return hemispheres
+    url = 'https://marshemispheres.com/'
+    browser.visit(url)
+
+    hemisphere_image_urls = []
+
+    hemslist = browser.find_by_css('a.product-item h3')
+    # 3. Write code to retrieve the image urls and titles for each hemisphere.
+    for i in range(4): 
+        hemslist = browser.find_by_css('a.product-item h3')
+        hemslist[i].click()
+        target = browser.links.find_by_text('Sample').first
+        
+        img_url = target['href']
+        img_title = browser.find_by_css("h2.title").text
+        data = {'title': img_title,'img_url': img_url}
+        hemisphere_image_urls.append(data)
+        
+        browser.back()
+    return hemisphere_image_urls
 
 
 if __name__ == "__main__":
